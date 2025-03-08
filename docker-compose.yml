@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  rpslsgame:
+    container_name: rpslsgame-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    restart: always
