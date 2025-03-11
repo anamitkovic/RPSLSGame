@@ -8,16 +8,20 @@ namespace RPSLSGame.Tests;
 public class GetRandomChoiceQueryHandlerTests
 {
     private readonly Mock<IRandomNumberService> _randomNumberServiceMock = new();
+    private readonly GetRandomChoiceHandler _handler;
 
+    public GetRandomChoiceQueryHandlerTests()
+    {
+        _handler = new GetRandomChoiceHandler(_randomNumberServiceMock.Object);
+    }
+    
     [Fact]
     public async Task Handle_ShouldReturnValidRandomChoice()
     {
         _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync(CancellationToken.None)).ReturnsAsync(5); 
-
-        var handler = new GetRandomChoiceHandler(_randomNumberServiceMock.Object);
         var query = new GetRandomChoiceQuery();
         
-        var result = await handler.Handle(query, CancellationToken.None);
+        var result = await _handler.Handle(query, CancellationToken.None);
         
         var validChoices = Enum.GetValues<GameMove>().Select(m => (int)m).ToList();
         
