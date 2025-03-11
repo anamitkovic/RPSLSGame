@@ -1,12 +1,32 @@
 version: "3.8"
+
 services:
-  rpslsgame:
+  rpslsgame-api:
     container_name: rpslsgame-api
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Postgres=Host=postgres;Port=5432;Database=rpslsgame;Username=postgres;Password=postgres
+    depends_on:
+      - postgres
     restart: always
+
+  postgres:
+    image: postgres:15
+    container_name: rpslsgame-db
+    restart: always
+    environment:
+      POSTGRES_DB: rpslsgame
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

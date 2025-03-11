@@ -8,28 +8,28 @@ namespace RPSLSGame.Tests;
 public class PlayGameHandlerTests
 {
     private readonly Mock<IRandomNumberService> _randomNumberServiceMock;
+    private readonly Mock<IGameResultRepository> _gameRepositoryMock;
     private readonly PlayGameHandler _handler;
 
     public PlayGameHandlerTests()
     {
         _randomNumberServiceMock = new Mock<IRandomNumberService>();
-        _handler = new PlayGameHandler(_randomNumberServiceMock.Object);
+        _gameRepositoryMock = new Mock<IGameResultRepository>();
+        _handler = new PlayGameHandler(_randomNumberServiceMock.Object, _gameRepositoryMock.Object);
     }
 
     [Fact]
     public async Task Handle_ShouldReturnTie_WhenPlayerAndComputerChooseSameMove()
     {
-        // Arrange
-        var playerMove = GameMove.Rock;
-        _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync()).ReturnsAsync(1); // Rock
 
-        var command = new PlayGameCommand(playerMove);
+        const GameMove playerMove = GameMove.Rock;
+        _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync(CancellationToken.None)).ReturnsAsync(1);
 
-        // Act
+        var command = new PlayGameCommand(playerMove, "1123");
+        
         var result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        Assert.True(result.IsSuccess); // Proveravamo da li je rezultat uspešan
+        
+        Assert.True(result.IsSuccess);
         Assert.Equal("tie", result.Value.Result);
         Assert.Equal(GameMove.Rock, result.Value.Computer);
         Assert.Equal(playerMove, result.Value.Player);
@@ -38,16 +38,13 @@ public class PlayGameHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnWin_WhenPlayerBeatsComputer()
     {
-        // Arrange
-        var playerMove = GameMove.Rock;
-        _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync()).ReturnsAsync(3); // Scissors
+        const GameMove playerMove = GameMove.Rock;
+        _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync(CancellationToken.None)).ReturnsAsync(3); 
 
-        var command = new PlayGameCommand(playerMove);
+        var command = new PlayGameCommand(playerMove, "1123");
 
-        // Act
         var result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
+        
         Assert.True(result.IsSuccess);
         Assert.Equal("win", result.Value.Result);
         Assert.Equal(GameMove.Scissors, result.Value.Computer);
@@ -57,16 +54,13 @@ public class PlayGameHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnLose_WhenPlayerLosesToComputer()
     {
-        // Arrange
         const GameMove playerMove = GameMove.Scissors;
-        _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync()).ReturnsAsync(1); // Rock
+        _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync(CancellationToken.None)).ReturnsAsync(1);
 
-        var command = new PlayGameCommand(playerMove);
-
-        // Act
+        var command = new PlayGameCommand(playerMove, "1123");
+        
         var result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
+        
         Assert.True(result.IsSuccess);
         Assert.Equal("lose", result.Value.Result);
         Assert.Equal(GameMove.Rock, result.Value.Computer);

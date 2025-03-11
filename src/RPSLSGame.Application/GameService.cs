@@ -8,28 +8,25 @@ using RPSLSGame.Domain.Models;
 
 namespace RPSLSGame.Application;
 
-public class GameService(IMediator mediator)
-    : IGameService
+public class GameService(IMediator mediator): IGameService
 {
-    private readonly List<GameResult> _gameHistory = new();
-
-    public async Task<List<GameChoiceDto>> GetChoicesAsync()
+    public async Task<List<GameChoiceDto>> GetChoicesAsync(CancellationToken cancellationToken)
     {
-        return await mediator.Send(new GetChoicesQuery());
+        return await mediator.Send(new GetChoicesQuery(), cancellationToken);
     }
 
-    public async Task<GameChoiceDto> GetRandomChoiceAsync()
+    public async Task<GameChoiceDto> GetRandomChoiceAsync(CancellationToken cancellationToken)
     {
-        return await mediator.Send(new GetRandomChoiceQuery());
+        return await mediator.Send(new GetRandomChoiceQuery(), cancellationToken);
     }
 
-    public async Task<Result<GameResult>> PlayGameAsync(GameMove playerMove)
+    public async Task<Result<PagedResult<PlayGameResponse>>> GetHistory(string email, int page, int pageSize, CancellationToken cancellationToken)
     {
-        return await mediator.Send(new PlayGameCommand(playerMove));
+        return await mediator.Send(new GetGameHistoryQuery(email, page, pageSize), cancellationToken);
     }
 
-    public async Task<List<GameResult>> GetRecentGamesAsync(int count)
+    public async Task<Result<PlayGameResponse>> PlayGameAsync(GameMove playerMove, string userId, CancellationToken cancellationToken)
     {
-        return await Task.FromResult(_gameHistory.TakeLast(count).ToList());
+        return await mediator.Send(new PlayGameCommand(playerMove, userId), cancellationToken);
     }
 }

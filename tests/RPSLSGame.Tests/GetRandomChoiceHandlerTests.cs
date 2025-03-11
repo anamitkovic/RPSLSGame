@@ -12,7 +12,7 @@ public class GetRandomChoiceQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnValidRandomChoice()
     {
-        _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync()).ReturnsAsync(5); 
+        _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync(CancellationToken.None)).ReturnsAsync(5); 
 
         var handler = new GetRandomChoiceHandler(_randomNumberServiceMock.Object);
         var query = new GetRandomChoiceQuery();

@@ -1,6 +1,3 @@
 namespace RPSLSGame.Api.DTOs;
 
-public class PlayGameRequest
-{
-    public int Player { get; set; }
-}
+public record PlayGameRequest(string Email, int Player);

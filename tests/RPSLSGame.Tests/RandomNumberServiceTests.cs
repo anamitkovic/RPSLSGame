@@ -39,7 +39,7 @@ public class RandomNumberServiceTests
 
         var service = serviceProvider.GetRequiredService<IRandomNumberService>();
 
-        await Assert.ThrowsAsync<HttpRequestException>(async () => await service.GetRandomNumberAsync());
+        await Assert.ThrowsAsync<HttpRequestException>(async () => await service.GetRandomNumberAsync(CancellationToken.None));
 
         mockHandler.Protected().Verify(
             "SendAsync",
@@ -74,7 +74,7 @@ public class RandomNumberServiceTests
 
         var service = new RandomNumberService(httpClient, logger);
         
-        var result = await service.GetRandomNumberAsync();
+        var result = await service.GetRandomNumberAsync(CancellationToken.None);
         
         Assert.Equal(42, result);
     }
@@ -108,7 +108,7 @@ public class RandomNumberServiceTests
         
         var service = serviceProvider.GetRequiredService<IRandomNumberService>();
         
-        var result = await service.GetRandomNumberAsync();
+        var result = await service.GetRandomNumberAsync(CancellationToken.None);
         
        Assert.Equal(33, result);
         mockHandler.Protected().Verify(

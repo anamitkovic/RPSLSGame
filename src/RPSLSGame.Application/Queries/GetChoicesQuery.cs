@@ -3,4 +3,4 @@ using RPSLSGame.Application.DTOs;
 
 namespace RPSLSGame.Application.Queries;
 
-public record GetChoicesQuery() : IRequest<List<GameChoiceDto>>;
+public record GetChoicesQuery : IRequest<List<GameChoiceDto>>;

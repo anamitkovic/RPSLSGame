@@ -7,12 +7,12 @@ namespace RPSLSGame.Infrastructure.Services;
 
 public class RandomNumberService(HttpClient httpClient, ILogger<RandomNumberService> logger) : IRandomNumberService
 {
-    public async Task<int> GetRandomNumberAsync()
+    public async Task<int> GetRandomNumberAsync(CancellationToken cancellationToken)
     {
-        var response = await httpClient.GetAsync("");
+        var response = await httpClient.GetAsync("", cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var data = await response.Content.ReadFromJsonAsync<RandomNumberResponse>();
+        var data = await response.Content.ReadFromJsonAsync<RandomNumberResponse>(cancellationToken);
         return data?.RandomNumber ?? new Random().Next(1, 100);
     }
 

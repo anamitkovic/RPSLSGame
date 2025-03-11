@@ -12,7 +12,7 @@ public class GetRandomChoiceHandler(IRandomNumberService randomNumberService)
     {
         var choices = Enum.GetValues<GameMove>().ToArray();
         
-        var randomNumber = await randomNumberService.GetRandomNumberAsync();
+        var randomNumber = await randomNumberService.GetRandomNumberAsync(cancellationToken);
         var randomMove = choices[(randomNumber - 1) % choices.Length];
 
         return new GameChoiceDto { Id = (int)randomMove, Name = randomMove.ToString() };
