@@ -20,7 +20,7 @@ This project provides a REST API for playing Rock Paper Scissors Lizard Spock. T
 
 2. Build and run the containers:
    ```sh
-   docker-compose up --build
+   docker-compose up --build -d
    ```
 
    This will start:
@@ -31,7 +31,7 @@ This project provides a REST API for playing Rock Paper Scissors Lizard Spock. T
 3. Apply Database Migrations
    Since the database is empty, you need to apply migrations manually inside the API container:
    ```sh
-   docker exec -it rpslsgame-api dotnet ef database update --project src/RPSLSGame.Infrastructure --startup-project src/RPSLSGame.Api
+   dotnet ef database update --project src/RPSLSGame.Infrastructure --startup-project src/RPSLSGame.Api
    ```
 4. Verify that the API is running: Open your browser or use a tool like Postman to check:
    ```sh

@@ -8,7 +8,7 @@ namespace RPSLSGame.Api.Controllers;
 
 [ApiController]
 [Route("/")]
-public class GameController(IGameService gameService) : ControllerBase
+public class GameController(IGameService gameService, ILogger<GameController> logger) : ControllerBase
 {
     /// <summary>
     /// Returns all possible choices in the game (Rock, Paper, Scissors, Lizard, Spock).
@@ -25,6 +25,7 @@ public class GameController(IGameService gameService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetChoices(CancellationToken cancellationToken = default)
     {
+        logger.LogInformation("Fetching all game choices.");
         var choices = await gameService.GetChoicesAsync(cancellationToken);
         return Ok(choices);
     }
@@ -41,6 +42,7 @@ public class GameController(IGameService gameService) : ControllerBase
     [HttpGet("choice")]
     public async Task<IActionResult> GetRandomChoice(CancellationToken cancellationToken = default)
     {
+        logger.LogInformation("Fetching a random game choice.");
         var choice = await gameService.GetRandomChoiceAsync(cancellationToken);
         return Ok(choice);
     }
@@ -63,6 +65,7 @@ public class GameController(IGameService gameService) : ControllerBase
     [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> PlayGame([FromBody] PlayGameRequest request, CancellationToken cancellationToken = default)
     {
+        logger.LogInformation("User {Email} is playing a game with choice {Choice}", request.Email, request.Player);
         var result = await gameService.PlayGameAsync((GameMove)request.Player, request.Email, cancellationToken);
         
         return result.IsSuccess 
