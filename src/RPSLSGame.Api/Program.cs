@@ -1,6 +1,7 @@
 using System.Reflection;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using RPSLSGame.Api.Middlewares;
 using RPSLSGame.Api.Validators;
 using RPSLSGame.Application;
@@ -25,12 +26,13 @@ builder.Services.AddControllers()
         fv.RegisterValidatorsFromAssemblyContaining<GameHistoryRequestValidator>();
     });
 
-var corsPolicyName = "AllowAll";
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(corsPolicyName, policy =>
+    options.AddPolicy("AllowSpecificOrigin", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins(allowedOrigins)
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
@@ -63,6 +65,6 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseAuthorization();
 app.MapControllers();
-app.UseCors(corsPolicyName); 
+app.UseCors("AllowSpecificOrigin");
 
 app.Run();
