@@ -16,8 +16,6 @@ public class RandomNumberService(HttpClient httpClient, ILogger<RandomNumberServ
         return data?.RandomNumber ?? new Random().Next(1, 100);
     }
 
-    private class RandomNumberResponse
-    {
-        [JsonPropertyName("random_number")] public int RandomNumber { get; set; }
-    }
+    private record RandomNumberResponse([property: JsonPropertyName("random_number")] int RandomNumber);
+
 }

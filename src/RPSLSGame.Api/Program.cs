@@ -25,6 +25,17 @@ builder.Services.AddControllers()
         fv.RegisterValidatorsFromAssemblyContaining<GameHistoryRequestValidator>();
     });
 
+var corsPolicyName = "AllowAll";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(corsPolicyName, policy =>
+    {
+        policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -52,5 +63,6 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseAuthorization();
 app.MapControllers();
+app.UseCors(corsPolicyName); 
 
 app.Run();

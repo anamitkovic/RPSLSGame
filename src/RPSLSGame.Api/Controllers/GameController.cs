@@ -7,7 +7,7 @@ using RPSLSGame.Domain.Models;
 namespace RPSLSGame.Api.Controllers;
 
 [ApiController]
-[Route("api/game")]
+[Route("/")]
 public class GameController(IGameService gameService) : ControllerBase
 {
     /// <summary>
