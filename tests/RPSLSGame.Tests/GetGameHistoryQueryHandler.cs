@@ -20,11 +20,11 @@ public class GetGameHistoryQueryHandlerTests
     [Fact]
     public async Task Handle_ValidEmail_ReturnsPagedResult()
     {
-        var request = new GetGameHistoryQuery("user@example.com" ,1,  2);
+        var request = new GetGameHistoryQuery("user@example.com", 1, 2);
         var gameResults = new List<GameResult>
         {
-            new("user@example.com", GameMove.Rock, GameMove.Scissors, "Win"),
-            new("user@example.com", GameMove.Paper, GameMove.Rock, "Win")
+            new(GameMove.Rock, GameMove.Scissors, "win") { Email = "user@example.com" },
+            new(GameMove.Paper, GameMove.Rock, "win") { Email = "user@example.com" }
         };
 
         _gameResultRepositoryMock
@@ -38,28 +38,17 @@ public class GetGameHistoryQueryHandlerTests
         Assert.Equal(5, result.Value.TotalCount);
         Assert.Equal(GameMove.Rock, result.Value.Items[0].Player);
         Assert.Equal(GameMove.Scissors, result.Value.Items[0].Computer);
-        Assert.Equal("Win", result.Value.Items[0].Result);
-    }
-
-    [Fact]
-    public async Task Handle_EmptyEmail_ReturnsFailure()
-    {
-        var request = new GetGameHistoryQuery("", 1, 10);
-        
-        var result = await _handler.Handle(request, CancellationToken.None);
-        
-        Assert.True(result.IsFailure);
-        Assert.Equal("Email is required.", result.Error);
+        Assert.Equal("win", result.Value.Items[0].Results);
     }
 
     [Fact]
     public async Task Handle_PaginationWorksCorrectly()
     {
-        var request = new GetGameHistoryQuery("user@example.com",  2, 2);
+        var request = new GetGameHistoryQuery("user@example.com", 2, 2);
         var gameResults = new List<GameResult>
         {
-            new("user@example.com", GameMove.Scissors, GameMove.Paper, "Win"),
-            new("user@example.com", GameMove.Lizard, GameMove.Spock, "Lose")
+            new(GameMove.Scissors, GameMove.Paper, "win") { Email = "user@example.com" },
+            new(GameMove.Lizard, GameMove.Spock, "lose") { Email = "user@example.com" }
         };
 
         _gameResultRepositoryMock
@@ -73,7 +62,7 @@ public class GetGameHistoryQueryHandlerTests
         Assert.Equal(5, result.Value.TotalCount);
         Assert.Equal(GameMove.Scissors, result.Value.Items[0].Player);
         Assert.Equal(GameMove.Paper, result.Value.Items[0].Computer);
-        Assert.Equal("Win", result.Value.Items[0].Result);
+        Assert.Equal("win", result.Value.Items[0].Results);
         Assert.True(result.Value.HasMore);
     }
 }

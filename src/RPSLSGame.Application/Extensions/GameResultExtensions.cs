@@ -11,7 +11,7 @@ public static class GameResultExtensions
         {
             Player = gameResult.Player,
             Computer = gameResult.Computer,
-            Result = gameResult.Result
+            Results = gameResult.Result
         };
     }
 }

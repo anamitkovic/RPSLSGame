@@ -40,6 +40,8 @@ public class GameController(IGameService gameService, ILogger<GameController> lo
     /// - 500 Internal Server Error: If an unexpected error occurs.
     /// </returns>
     [HttpGet("choice")]
+    [ProducesResponseType(typeof(GameChoiceDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetRandomChoice(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Fetching a random game choice.");
@@ -50,7 +52,7 @@ public class GameController(IGameService gameService, ILogger<GameController> lo
     /// <summary>
     /// Plays a game round based on the user's move and returns the result.
     /// </summary>
-    /// <param name="request">The request object containing the user's move and email.</param>
+    /// <param name="request">The request object containing the user's move and optional email.</param>
     /// <param name="cancellationToken">A token to cancel the request.</param>
     /// <returns>
     /// Returns the result of the game round.

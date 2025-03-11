@@ -21,8 +21,11 @@ public class PlayGameHandler(IRandomNumberService randomNumberService, IGameResu
         var computerMove = moves[(randomNumber - 1) % moves.Length];
 
         var result = DetermineWinner(request.PlayerMove, computerMove);
-        var gameResult = new GameResult(request.Email, request.PlayerMove, computerMove, result);
+        var gameResult = new GameResult(request.PlayerMove, computerMove, result);
 
+        if (string.IsNullOrEmpty(request.Email)) return Result.Success(gameResult.MapToResponse());
+        
+        gameResult.Email = request.Email;
         await gameResultRepository.AddGameResultAsync(gameResult, cancellationToken);
         
         return Result.Success(gameResult.MapToResponse());
