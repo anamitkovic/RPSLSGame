@@ -21,7 +21,7 @@ public class GameController(IGameService gameService, ILogger<GameController> lo
     /// </returns>
     [HttpGet("choices")]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(List<GameMove>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<GameChoiceDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetChoices(CancellationToken cancellationToken = default)
     {

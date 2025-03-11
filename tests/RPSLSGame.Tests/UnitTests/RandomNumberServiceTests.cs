@@ -6,7 +6,7 @@ using Moq.Protected;
 using RPSLSGame.Application.Interfaces;
 using RPSLSGame.Infrastructure.Services;
 
-namespace RPSLSGame.Tests;
+namespace RPSLSGame.Tests.UnitTests;
 
 public class RandomNumberServiceTests
 {

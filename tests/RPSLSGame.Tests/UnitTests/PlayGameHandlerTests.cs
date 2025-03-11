@@ -3,7 +3,7 @@ using RPSLSGame.Application.Commands;
 using RPSLSGame.Application.Interfaces;
 using RPSLSGame.Domain.Models;
 
-namespace RPSLSGame.Tests;
+namespace RPSLSGame.Tests.UnitTests;
 
 public class PlayGameHandlerTests
 {

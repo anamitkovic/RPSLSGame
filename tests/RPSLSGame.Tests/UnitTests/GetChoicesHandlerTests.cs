@@ -1,6 +1,8 @@
+using RPSLSGame.Application.DTOs;
 using RPSLSGame.Application.Queries;
 using RPSLSGame.Domain.Models;
-using RPSLSGame.Application.DTOs;
+
+namespace RPSLSGame.Tests.UnitTests;
 
 public class GetChoicesHandlerTests
 {

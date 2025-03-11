@@ -4,7 +4,7 @@ using RPSLSGame.Application.Interfaces;
 using RPSLSGame.Application.Queries;
 using RPSLSGame.Domain.Models;
 
-namespace RPSLSGame.Tests;
+namespace RPSLSGame.Tests.UnitTests;
 
 public class GetGameHistoryQueryHandlerTests
 {

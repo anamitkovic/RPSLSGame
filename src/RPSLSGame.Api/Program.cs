@@ -68,3 +68,4 @@ app.MapControllers();
 app.UseCors("AllowSpecificOrigin");
 
 app.Run();
+public partial class Program { }
