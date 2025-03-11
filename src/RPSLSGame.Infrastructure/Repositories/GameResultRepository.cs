@@ -14,10 +14,10 @@ public class GameResultRepository(GameDbContext dbContext) : IGameResultReposito
         await dbContext.SaveChangesAsync(cancellationToken);
     }
     
-    public async Task<PagedResult<GameResult>> GetHistoryAsync(string userId, int page, int pageSize, CancellationToken cancellationToken)
+    public async Task<PagedResult<GameResult>> GetHistoryAsync(string email, int page, int pageSize, CancellationToken cancellationToken)
     {
         var query = dbContext.GameResults
-            .Where(gr => gr.Email == userId)
+            .Where(gr => gr.Email == email)
             .OrderByDescending(gr => gr.CreatedAt);
 
         var totalCount = await query.CountAsync(cancellationToken);
