@@ -89,7 +89,7 @@ To manually connect to the PostgreSQL database inside the running container:
 docker exec -it rpslsgame-db psql -U postgres
 ```
 
-Once inside the PostgreSQL shell, you can check if the tables exist:
+Once inside the PostgreSQL shell, you can check if the table exists:
 
 ```sql
 SELECT * FROM "GameResults";
@@ -97,7 +97,7 @@ SELECT * FROM "GameResults";
 
 ## Running Locally Without Docker
 
-> **Note: PostgreSQL is only required if you want to use optional features like saving email for tracking and the /history/search endpoint. For basic game functionality, the database is not needed.**
+> **Note: PostgreSQL is only required if you want to use optional features like saving email for tracking and the /history/search endpoint. For basic game functionality, the database is not needed. If you do not require these features, skip steps 1 and 2 and proceed directly to step 3.**
 
 If you want to run the project locally, make sure you have .NET 8 installed. Then:
 
@@ -113,7 +113,7 @@ If you want to run the project locally, make sure you have .NET 8 installed. The
 
 Now, your API should be accessible at `http://localhost:5000/swagger/index.html`.
 
-## Running Tests
+## Running Test
 
 To ensure that everything is working correctly, you can run the integration and unit tests.
 
@@ -123,7 +123,7 @@ Integration tests use **In-Memory Database** (for simulating database operations
 
 1. **Run the tests** using the .NET CLI:
    ```sh
-   dotnet test tests/
+   dotnet test tests/RPSLSGame.Tests
    ```
 
 ### Understanding WireMock in Tests
