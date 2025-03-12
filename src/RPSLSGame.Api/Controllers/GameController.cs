@@ -63,16 +63,17 @@ public class GameController(IGameService gameService, ILogger<GameController> lo
     [ProducesResponseType(typeof(PlayGameResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> PlayGame([FromBody] PlayGameRequest request, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> PlayGame([FromBody] PlayGameRequest request,
+        CancellationToken cancellationToken = default)
     {
         logger.LogInformation("User {Email} is playing a game with choice {Choice}", request.Email, request.Player);
         var result = await gameService.PlayGameAsync((GameMove)request.Player, request.Email, cancellationToken);
-        
-        return result.IsSuccess 
-            ? Ok(result.Value) 
+
+        return result.IsSuccess
+            ? Ok(result.Value)
             : BadRequest(result.Error);
     }
-    
+
     /// <summary>
     /// Retrieves a paginated history of games for a given user.
     /// </summary>
@@ -92,11 +93,11 @@ public class GameController(IGameService gameService, ILogger<GameController> lo
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetGameHistory(
         [FromBody] GameHistoryRequest request,
-        [FromQuery] int page = 1,  
-        [FromQuery] int pageSize = 10,  
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
         CancellationToken cancellationToken = default)
     {
-        if (page < 0 && pageSize < 0)
+        if (page <= 0 || pageSize <= 0)
         {
             return BadRequest("Page number and page size cannot be negative.");
         }

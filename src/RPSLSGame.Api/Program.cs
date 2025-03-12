@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using RPSLSGame.Api.Middlewares;
 using RPSLSGame.Api.Validators;
 using RPSLSGame.Application;
+using RPSLSGame.Application.Extensions;
 using RPSLSGame.Application.Interfaces;
 using RPSLSGame.Infrastructure.Data;
 using RPSLSGame.Infrastructure.Extensions;
@@ -13,8 +14,7 @@ using RPSLSGame.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(GameService).Assembly));
-
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddHttpClient<IRandomNumberService, RandomNumberService>();
@@ -49,8 +49,6 @@ builder.Services.AddSwaggerGen(options =>
 
 var connectionString = builder.Configuration.GetConnectionString("Postgres");
 
-builder.Services.AddPooledDbContextFactory<GameDbContext>(options =>
-    options.UseNpgsql(connectionString));
 builder.Services.AddDbContext<GameDbContext>(options =>
     options.UseNpgsql(connectionString));
 

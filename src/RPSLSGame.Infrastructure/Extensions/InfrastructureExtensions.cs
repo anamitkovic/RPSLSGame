@@ -34,13 +34,13 @@ public static class InfrastructureExtensions
                         .HandleResult(response => !response.IsSuccessStatusCode)
                 });
 
-                builder.AddTimeout(TimeSpan.FromSeconds(3));
+                builder.AddTimeout(TimeSpan.FromSeconds(5));
 
                 builder.AddCircuitBreaker(new CircuitBreakerStrategyOptions<HttpResponseMessage>
                 {
                     SamplingDuration = TimeSpan.FromSeconds(30),
-                    MinimumThroughput = 5,
-                    BreakDuration = TimeSpan.FromSeconds(10)
+                    MinimumThroughput = 2,
+                    BreakDuration = TimeSpan.FromSeconds(15)
                 });
             });
         
