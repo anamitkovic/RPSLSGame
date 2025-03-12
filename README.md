@@ -13,26 +13,34 @@ This project provides a REST API for playing Rock Paper Scissors Lizard Spock. T
 ### Running with Docker
 
 1. Clone the repository:
+
    ```sh
    git clone https://github.com/anamitkovic/RPSLSGame.git
    cd RPSLSGame
    ```
 
 2. Build and run the containers:
+
    ```sh
    docker-compose up --build -d
    ```
 
    This will start:
-   - The API service (`rpslsgame-api`) on port 8081
-   - The PostgreSQL database (`rpslsgame-db`) on port 5433
+
+    - The API service (`rpslsgame-api`) on port 8081
+    - The PostgreSQL database (`rpslsgame-db`) on port 5433
+    - The database will be automatically updated via the entrypoint.
 
 3. Apply Database Migrations
+
    Since the database is empty, you need to apply migrations manually inside the API container:
+
    ```sh
    dotnet ef database update --project src/RPSLSGame.Infrastructure --startup-project src/RPSLSGame.Api
    ```
+
 4. Verify that the API is running: Open your browser or use a tool like Postman to check:
+
    ```sh
    http://localhost:8081/swagger/index.html
    ```
@@ -40,16 +48,19 @@ This project provides a REST API for playing Rock Paper Scissors Lizard Spock. T
 ## API Endpoints
 
 ### Get Choices
+
 ```http
 GET /choices
 ```
 
 ### Get Random Choice
+
 ```http
 GET /choice
 ```
 
 ### Play a Game
+
 ```http
 POST /play
 Content-Type: application/json
@@ -61,6 +72,7 @@ Content-Type: application/json
 ```
 
 ### Get Game History
+
 ```http
 POST /history/search
 Content-Type: application/json
@@ -73,16 +85,20 @@ Content-Type: application/json
 ## Connecting to the Database
 
 To manually connect to the PostgreSQL database inside the running container:
+
 ```sh
 docker exec -it rpslsgame-db psql -U postgres
 ```
 
 Once inside the PostgreSQL shell, you can check if the tables exist:
+
 ```sql
 SELECT * FROM "GameResults";
 ```
 
 ## Running Locally Without Docker
+
+> **Note: PostgreSQL is only required if you want to use optional features like saving email for tracking and the /history/search endpoint. For basic game functionality, the database is not needed. If you do not require these features, skip steps 1 and 2 and proceed directly to step 3.**
 
 If you want to run the project locally, make sure you have .NET 8 installed. Then:
 
@@ -113,6 +129,14 @@ To ensure that everything is working correctly, you can run the integration and 
    dotnet test tests/RPSLSGame.Tests
    ```
 
+### Running Tests in Docker
+
+If you want to run tests inside a Docker container, use the following command:
+
+```sh
+   docker-compose run --rm rpslsgame-api dotnet test tests/RPSLSGame.Tests
+```
+
 ### Using WireMock for Testing
 
 Integration tests use **WireMock** to simulate external services. The test factory class (`CustomWebApplicationFactory`) starts WireMock on port `9090` and configures it to respond with test data.
@@ -128,9 +152,13 @@ Integration tests use **WireMock** to simulate external services. The test facto
 - WireMock mappings reset before each test execution to ensure consistency.
 
 ### Debugging Failing Tests
+
 If the tests fail unexpectedly, try the following:
+
 - Ensure that the WireMock server is running by checking its logs.
 - Manually test the mock endpoint to verify it responds correctly:
   ```sh
   curl http://localhost:9090/random
   ```
+
+
