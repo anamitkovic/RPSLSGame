@@ -26,7 +26,6 @@ This project provides a REST API for playing Rock Paper Scissors Lizard Spock. T
    This will start:
    - The API service (`rpslsgame-api`) on port 8081
    - The PostgreSQL database (`rpslsgame-db`) on port 5433
-   - The database will be automatically updated via the entrypoint.
 
 3. Apply Database Migrations
    Since the database is empty, you need to apply migrations manually inside the API container:
@@ -56,8 +55,8 @@ POST /play
 Content-Type: application/json
 
 {
-    "email": "user@example.com",
-    "player": 2
+    "player": 2,
+    "email": "user@example.com" // Optional
 }
 ```
 
@@ -99,4 +98,39 @@ If you want to run the project locally, make sure you have .NET 8 installed. The
 
 Now, your API should be accessible at `http://localhost:5000/swagger/index.html`.
 
+## Running Tests
 
+To ensure that everything is working correctly, you can run the integration and unit tests.
+
+### Running Tests Locally
+
+1. Open a terminal and navigate to the root directory of the project:
+   ```sh
+   cd RPSLSGame
+   ```
+2. Run the tests using the .NET CLI:
+   ```sh
+   dotnet test tests/RPSLSGame.Tests
+   ```
+
+### Using WireMock for Testing
+
+Integration tests use **WireMock** to simulate external services. The test factory class (`CustomWebApplicationFactory`) starts WireMock on port `9090` and configures it to respond with test data.
+
+- To set up a **valid response**:
+  ```csharp
+  factory.SetupValidResponse();
+  ```
+- To simulate a **service unavailable** response:
+  ```csharp
+  factory.SetupServiceUnavailable();
+  ```
+- WireMock mappings reset before each test execution to ensure consistency.
+
+### Debugging Failing Tests
+If the tests fail unexpectedly, try the following:
+- Ensure that the WireMock server is running by checking its logs.
+- Manually test the mock endpoint to verify it responds correctly:
+  ```sh
+  curl http://localhost:9090/random
+  ```
