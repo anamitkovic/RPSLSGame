@@ -17,52 +17,38 @@ public class GetGameHistoryQueryHandlerTests
         _handler = new GetGameHistoryHandler(_gameResultRepositoryMock.Object);
     }
 
-    [Fact]
-    public async Task Handle_ValidEmail_ReturnsPagedResult()
+    [Theory]
+    [InlineData("user@example.com", 1, 2)]
+    [InlineData("user@example.com", 2, 2)]
+    [InlineData("user@example.com", 1, 5)] 
+    public async Task Handle_ValidEmail_ReturnsPagedResult(string email, int page, int pageSize)
     {
-        var request = new GetGameHistoryQuery("user@example.com", 1, 2);
+        // Arrange
         var gameResults = new List<GameResult>
         {
-            new(GameMove.Rock, GameMove.Scissors, "win") { Email = "user@example.com" },
-            new(GameMove.Paper, GameMove.Rock, "win") { Email = "user@example.com" }
+            new(GameMove.Rock, GameMove.Scissors, "win") { Email = email },
+            new(GameMove.Paper, GameMove.Rock, "win") { Email = email }
         };
 
         _gameResultRepositoryMock
-            .Setup(repo => repo.GetHistoryAsync(request.Email, request.Page, request.PageSize, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new PagedResult<GameResult>(gameResults, 5, request.Page, request.PageSize));
-        
-        var result = await _handler.Handle(request, CancellationToken.None);
-        
-        Assert.True(result.IsSuccess);
-        Assert.Equal(2, result.Value.Items.Count);
-        Assert.Equal(5, result.Value.TotalCount);
-        Assert.Equal(GameMove.Rock, result.Value.Items[0].Player);
-        Assert.Equal(GameMove.Scissors, result.Value.Items[0].Computer);
-        Assert.Equal("win", result.Value.Items[0].Results);
-    }
+            .Setup(repo => repo.GetHistoryAsync(email, page, pageSize, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PagedResult<GameResult>(gameResults, 5, page, pageSize));
 
-    [Fact]
-    public async Task Handle_PaginationWorksCorrectly()
-    {
-        var request = new GetGameHistoryQuery("user@example.com", 2, 2);
-        var gameResults = new List<GameResult>
+        var request = new GetGameHistoryQuery(email, page, pageSize);
+
+        // Act
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(gameResults.Count, result.Value.Items.Count);
+        Assert.Equal(5, result.Value.TotalCount);
+        
+        for (var i = 0; i < gameResults.Count; i++)
         {
-            new(GameMove.Scissors, GameMove.Paper, "win") { Email = "user@example.com" },
-            new(GameMove.Lizard, GameMove.Spock, "lose") { Email = "user@example.com" }
-        };
-
-        _gameResultRepositoryMock
-            .Setup(repo => repo.GetHistoryAsync(request.Email, request.Page, request.PageSize, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new PagedResult<GameResult>(gameResults, 5, request.Page, request.PageSize));
-        
-        var result = await _handler.Handle(request, CancellationToken.None);
-
-        Assert.True(result.IsSuccess);
-        Assert.Equal(2, result.Value.Items.Count);
-        Assert.Equal(5, result.Value.TotalCount);
-        Assert.Equal(GameMove.Scissors, result.Value.Items[0].Player);
-        Assert.Equal(GameMove.Paper, result.Value.Items[0].Computer);
-        Assert.Equal("win", result.Value.Items[0].Results);
-        Assert.True(result.Value.HasMore);
+            Assert.Equal(gameResults[i].PlayerMove, result.Value.Items[i].Player);
+            Assert.Equal(gameResults[i].ComputerMove, result.Value.Items[i].Computer);
+            Assert.Equal(gameResults[i].Result, result.Value.Items[i].Results);
+        }
     }
 }

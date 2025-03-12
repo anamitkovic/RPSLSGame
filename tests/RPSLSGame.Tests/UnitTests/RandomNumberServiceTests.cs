@@ -10,6 +10,7 @@ namespace RPSLSGame.Tests.UnitTests;
 
 public class RandomNumberServiceTests
 {
+    
     [Fact]
     public async Task GetRandomNumberAsync_ShouldRetryOnFailure()
     {

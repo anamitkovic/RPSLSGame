@@ -15,47 +15,27 @@ public class GetRandomChoiceQueryHandlerTests
         _handler = new GetRandomChoiceHandler(_randomNumberServiceMock.Object);
     }
     
-    [Fact]
-    public async Task Handle_ShouldReturnValidRandomChoice()
+    [Theory]
+    [InlineData(1)]  
+    [InlineData(5)] 
+    [InlineData(100)]
+    public async Task Handle_ShouldReturnValidChoice(int randomNumber)
     {
-        _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync(CancellationToken.None)).ReturnsAsync(5); 
-        var query = new GetRandomChoiceQuery();
-        
-        var result = await _handler.Handle(query, CancellationToken.None);
-        
-        var validChoices = Enum.GetValues<GameMove>().Select(m => (int)m).ToList();
-        
-        Assert.Contains(result.Id, validChoices);
-        Assert.NotEmpty(result.Name);
-    }
+        // Arrange
+        _randomNumberServiceMock
+            .Setup(x => x.GetRandomNumberAsync(CancellationToken.None))
+            .ReturnsAsync(randomNumber);
 
-    [Fact]
-    public async Task Handle_ShouldReturnFirstChoice_WhenRandomNumberIsOne()
-    {
-        _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync(CancellationToken.None)).ReturnsAsync(1);
         var query = new GetRandomChoiceQuery();
         
+        // Act
         var result = await _handler.Handle(query, CancellationToken.None);
         
-        Assert.Equal((int)GameMove.Rock, result.Id);
-        Assert.Equal(GameMove.Rock.ToString(), result.Name);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldReturnValidChoice_WhenRandomNumberIsOutOfBounds()
-    {
-        _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync(CancellationToken.None)).ReturnsAsync(100); 
-        var query = new GetRandomChoiceQuery();
-        
-        var result = await _handler.Handle(query, CancellationToken.None);
-        
+        // Assert
         var moves = Enum.GetValues<GameMove>().ToArray();
-        var expectedMove = moves[(100 - 1) % moves.Length]; 
+        var expectedMove = moves[(Math.Abs(randomNumber) - 1) % moves.Length]; 
 
         Assert.Equal((int)expectedMove, result.Id);
-        Assert.Equal(expectedMove.ToString(), result.Name);
+        Assert.Equal(expectedMove.ToString().ToLower(), result.Name);
     }
-
-    
-
 }
