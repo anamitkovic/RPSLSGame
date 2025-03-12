@@ -1,7 +1,7 @@
 using MediatR;
 using RPSLSGame.Application.DTOs;
+using RPSLSGame.Application.Helpers;
 using RPSLSGame.Application.Interfaces;
-using RPSLSGame.Domain.Models;
 
 namespace RPSLSGame.Application.Queries;
 
@@ -10,11 +10,11 @@ public class GetRandomChoiceHandler(IRandomNumberService randomNumberService)
 {
     public async Task<GameChoiceDto> Handle(GetRandomChoiceQuery request, CancellationToken cancellationToken)
     {
-        var choices = Enum.GetValues<GameMove>().ToArray();
-        
+        var choices = GameMoveHelper.Choices;
+    
         var randomNumber = await randomNumberService.GetRandomNumberAsync(cancellationToken);
-        var randomMove = choices[(randomNumber - 1) % choices.Length];
+        var randomMove = choices[(randomNumber - 1) % choices.Count];
 
-        return new GameChoiceDto { Id = (int)randomMove, Name = randomMove.ToString() };
+        return randomMove;
     }
 }

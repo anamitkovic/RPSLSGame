@@ -17,12 +17,10 @@ public class GameController(IGameService gameService, ILogger<GameController> lo
     /// <returns>
     /// A list of possible game choices.
     /// - 200 OK: Successfully retrieved the list of choices.
-    /// - 500 Internal Server Error: If an unexpected error occurs.
     /// </returns>
     [HttpGet("choices")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(List<GameChoiceDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetChoices(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Fetching all game choices.");
@@ -31,17 +29,17 @@ public class GameController(IGameService gameService, ILogger<GameController> lo
     }
 
     /// <summary>
-    /// Returns a randomly selected game choice.
+    /// Retrieves a randomly selected game choice from the available options.
     /// </summary>
     /// <param name="cancellationToken">A token to cancel the request.</param>
     /// <returns>
-    /// A randomly selected game choice.
+    /// Returns a randomly selected game choice.
     /// - 200 OK: Successfully retrieved a random game choice.
-    /// - 500 Internal Server Error: If an unexpected error occurs.
+    /// - 503 Service Unavailable: If the external random number service is unavailable.
     /// </returns>
     [HttpGet("choice")]
     [ProducesResponseType(typeof(GameChoiceDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> GetRandomChoice(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Fetching a random game choice.");
@@ -98,7 +96,12 @@ public class GameController(IGameService gameService, ILogger<GameController> lo
         [FromQuery] int pageSize = 10,  
         CancellationToken cancellationToken = default)
     {
-        var result = await gameService.GetHistory(request.Email, page, pageSize, cancellationToken);
+        if (page < 0 && pageSize < 0)
+        {
+            return BadRequest("Page number and page size cannot be negative.");
+        }
+        
+        var result = await gameService.GetHistoryAsync(request.Email, page, pageSize, cancellationToken);
         
         if (result.IsFailure)
             return BadRequest(result.Error);

@@ -33,19 +33,14 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
                 errorResponse = new { message = exception.Message };
                 break;
 
-            case UnauthorizedAccessException:
-                response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                errorResponse = new { message = "Unauthorized access." };
-                break;
-
-            case KeyNotFoundException:
-                response.StatusCode = (int)HttpStatusCode.NotFound;
-                errorResponse = new { message = "Resource not found." };
-                break;
-
             case NpgsqlException:
                 response.StatusCode = (int)HttpStatusCode.ServiceUnavailable;
                 errorResponse = new { message = "Database is currently unavailable." };
+                break;
+            
+            case HttpRequestException:
+                response.StatusCode = (int)HttpStatusCode.ServiceUnavailable;
+                errorResponse = new { message = "External service is currently unavailable. Please try again later." };
                 break;
 
             default:

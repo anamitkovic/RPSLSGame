@@ -20,7 +20,7 @@ public class GameService(IMediator mediator): IGameService
         return await mediator.Send(new GetRandomChoiceQuery(), cancellationToken);
     }
 
-    public async Task<Result<PagedResult<PlayGameResponse>>> GetHistory(string email, int page, int pageSize, CancellationToken cancellationToken)
+    public async Task<Result<PagedResult<PlayGameResponse>>> GetHistoryAsync(string email, int page, int pageSize, CancellationToken cancellationToken)
     {
         return await mediator.Send(new GetGameHistoryQuery(email, page, pageSize), cancellationToken);
     }

@@ -1,19 +1,28 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace RPSLSGame.Domain.Models;
 
-public class GameResult
+public record GameResult
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
+    public Guid Id { get; set; } 
     public string? Email { get; set; }
-    public GameMove Player { get; set; }
-    public GameMove Computer { get; set; }
+    public GameMove PlayerMove { get; set; }
+    public GameMove ComputerMove { get; set; }
     public string Result { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
-    private GameResult(){}
+    /// <summary>
+    /// Protected constructor is required for EF Core migrations.
+    /// EF needs a parameterless constructor to materialize objects from the database.
+    /// </summary>
+    protected GameResult() {}
     public GameResult(GameMove playerMove, GameMove computerMove, string result)
     {
-        Player = playerMove;
-        Computer = computerMove;
+        PlayerMove = playerMove;
+        ComputerMove = computerMove;
         Result = result;
     }
 }

@@ -9,8 +9,8 @@ public static class GameResultExtensions
     {
         return new PlayGameResponse
         {
-            Player = gameResult.Player,
-            Computer = gameResult.Computer,
+            Player = gameResult.PlayerMove,
+            Computer = gameResult.ComputerMove,
             Results = gameResult.Result
         };
     }

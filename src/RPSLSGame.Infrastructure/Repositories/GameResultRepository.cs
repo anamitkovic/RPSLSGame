@@ -17,12 +17,12 @@ public class GameResultRepository(GameDbContext dbContext) : IGameResultReposito
     public async Task<PagedResult<GameResult>> GetHistoryAsync(string email, int page, int pageSize, CancellationToken cancellationToken)
     {
         var query = dbContext.GameResults
-            .Where(gr => gr.Email == email)
-            .OrderByDescending(gr => gr.CreatedAt);
-
+            .Where(gr => gr.Email == email);
+        
         var totalCount = await query.CountAsync(cancellationToken);
 
         var results = await query
+            .OrderByDescending(gr => gr.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
