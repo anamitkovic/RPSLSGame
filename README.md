@@ -29,7 +29,6 @@ This project provides a REST API for playing Rock Paper Scissors Lizard Spock. T
 
     - The API service (`rpslsgame-api`) on port 8081
     - The PostgreSQL database (`rpslsgame-db`) on port 5433
-    - The database will be automatically updated via the entrypoint.
 
 3. Apply Database Migrations
 
@@ -98,7 +97,7 @@ SELECT * FROM "GameResults";
 
 ## Running Locally Without Docker
 
-> **Note: PostgreSQL is only required if you want to use optional features like saving email for tracking and the /history/search endpoint. For basic game functionality, the database is not needed. If you do not require these features, skip steps 1 and 2 and proceed directly to step 3.**
+> **Note: PostgreSQL is only required if you want to use optional features like saving email for tracking and the /history/search endpoint. For basic game functionality, the database is not needed.**
 
 If you want to run the project locally, make sure you have .NET 8 installed. Then:
 
@@ -118,28 +117,18 @@ Now, your API should be accessible at `http://localhost:5000/swagger/index.html`
 
 To ensure that everything is working correctly, you can run the integration and unit tests.
 
-### Running Tests Locally
+### Running Tests Locally with In-Memory Database and WireMock
 
-1. Open a terminal and navigate to the root directory of the project:
+Integration tests use **In-Memory Database** (for simulating database operations) and **WireMock** (to simulate external service responses).
+
+1. **Run the tests** using the .NET CLI:
    ```sh
-   cd RPSLSGame
-   ```
-2. Run the tests using the .NET CLI:
-   ```sh
-   dotnet test tests/RPSLSGame.Tests
+   dotnet test tests/
    ```
 
-### Running Tests in Docker
+### Understanding WireMock in Tests
 
-If you want to run tests inside a Docker container, use the following command:
-
-```sh
-   docker-compose run --rm rpslsgame-api dotnet test tests/RPSLSGame.Tests
-```
-
-### Using WireMock for Testing
-
-Integration tests use **WireMock** to simulate external services. The test factory class (`CustomWebApplicationFactory`) starts WireMock on port `9090` and configures it to respond with test data.
+**WireMock** is used to mock the external random number service. The test factory class (`CustomWebApplicationFactory`) starts WireMock on port `9090` and configures it to respond with test data.
 
 - To set up a **valid response**:
   ```csharp
@@ -149,7 +138,8 @@ Integration tests use **WireMock** to simulate external services. The test facto
   ```csharp
   factory.SetupServiceUnavailable();
   ```
-- WireMock mappings reset before each test execution to ensure consistency.
+
+Before each test, WireMock mappings are reset to ensure test consistency.
 
 ### Debugging Failing Tests
 
@@ -160,5 +150,4 @@ If the tests fail unexpectedly, try the following:
   ```sh
   curl http://localhost:9090/random
   ```
-
 

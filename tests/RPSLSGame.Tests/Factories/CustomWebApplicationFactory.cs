@@ -41,6 +41,12 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
                 client.BaseAddress = new Uri("http://localhost:9090/random");
             });
             
+            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<GameDbContext>));
+            if (descriptor != null)
+            {
+                services.Remove(descriptor);
+            }
+            
             services.AddDbContext<GameDbContext>(options =>
             {
                 options.UseInMemoryDatabase("InMemoryGameTestDb");
@@ -65,6 +71,7 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
                 })
                 .WithHeader("Content-Type", "application/json")
         );
+        Thread.Sleep(500);
         
     }
     
