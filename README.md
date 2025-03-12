@@ -89,7 +89,7 @@ To manually connect to the PostgreSQL database inside the running container:
 docker exec -it rpslsgame-db psql -U postgres
 ```
 
-Once inside the PostgreSQL shell, you can check if the table exists:
+Once inside the PostgreSQL shell, you can check if the tables exist:
 
 ```sql
 SELECT * FROM "GameResults";
@@ -113,11 +113,11 @@ If you want to run the project locally, make sure you have .NET 8 installed. The
 
 Now, your API should be accessible at `http://localhost:5000/swagger/index.html`.
 
-## Running Test
+## Running Tests
 
 To ensure that everything is working correctly, you can run the integration and unit tests.
 
-### Running Tests Locally with In-Memory Database and WireMock
+### Running Tests Locally with In-Memory Database, WireMock
 
 Integration tests use **In-Memory Database** (for simulating database operations) and **WireMock** (to simulate external service responses).
 
@@ -140,6 +140,16 @@ Integration tests use **In-Memory Database** (for simulating database operations
   ```
 
 Before each test, WireMock mappings are reset to ensure test consistency.
+
+## Polly Retry Configuration
+
+Polly retry policies are applied globally to improve resilience when communicating with external services. The retry mechanism is specifically configured for the **Random Number API**, using:
+
+- **Retry Policy**: Retries failed HTTP requests up to **3 times**, with an **exponential backoff strategy** (`2s, 4s, 8s`).
+- **Timeout Policy**: Cancels requests that take longer than **5 seconds**.
+- **Circuit Breaker Policy**: If too many requests fail within **30 seconds**, the circuit will open for **15 seconds** to prevent overloading the external service.
+
+Polly is integrated into the `HttpClient` used by the application, making communication with the Random Number API more resilient. If an external service returns an error (like **503 Service Unavailable**), Polly will attempt retries based on an exponential backoff strategy before failing permanently.
 
 ### Debugging Failing Tests
 
