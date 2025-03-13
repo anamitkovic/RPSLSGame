@@ -57,12 +57,14 @@ public class GameController(IGameService gameService, ILogger<GameController> lo
     /// - 200 OK: Successfully played the game and returns the game result.
     /// - 400 Bad Request: If the request is invalid or missing required data.
     /// - 500 Internal Server Error: If an unexpected error occurs.
+    /// - 503 Service Unavailable: If the external random number service is unavailable.
     /// </returns>
     [HttpPost("play")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(PlayGameResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> PlayGame([FromBody] PlayGameRequest request,
         CancellationToken cancellationToken = default)
     {
@@ -86,11 +88,13 @@ public class GameController(IGameService gameService, ILogger<GameController> lo
     /// - 200 OK: Successfully retrieved game history.
     /// - 400 Bad Request: If the email is invalid or missing.
     /// - 500 Internal Server Error: If an unexpected error occurs.
+    /// - 503 Service Unavailable: If the external random number service is unavailable.
     /// </returns>
     [HttpPost("history/search")]
     [ProducesResponseType(typeof(PagedResult<PlayGameResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> GetGameHistory(
         [FromBody] GameHistoryRequest request,
         [FromQuery] int page = 1,

@@ -34,8 +34,8 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
                 break;
 
             case NpgsqlException:
-                response.StatusCode = (int)HttpStatusCode.ServiceUnavailable;
-                errorResponse = new { message = "Database is currently unavailable." };
+                response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                errorResponse = new { message = "Database operation failed. Please try again later." };
                 break;
             
             case HttpRequestException:
