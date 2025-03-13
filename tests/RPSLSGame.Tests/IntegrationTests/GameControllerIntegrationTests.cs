@@ -142,12 +142,15 @@ public class GameControllerIntegrationTests(CustomWebApplicationFactory<Program>
     [InlineData("{}")]
     public async Task PlayGame_ShouldReturnBadRequest_WhenRequestIsNullOrEmpty(string? requestBody)
     {
+        // Arrange
         HttpContent content = requestBody == null 
             ? new StringContent("", Encoding.UTF8, "application/json")
             : new StringContent(requestBody, Encoding.UTF8, "application/json");
     
+        // Act
         var response = await _client.PostAsync("/play", content);
     
+        // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -164,7 +167,7 @@ public class GameControllerIntegrationTests(CustomWebApplicationFactory<Program>
         const int page = 1;
         const int pageSize = 10;
     
-        //Act
+        // Act
         var response = await _client.PostAsJsonAsync($"/history/search?page={page}&pageSize={pageSize}", request);
 
         // Assert
@@ -178,10 +181,13 @@ public class GameControllerIntegrationTests(CustomWebApplicationFactory<Program>
     [InlineData(0, 0)]
     public async Task GetGameHistory_ShouldReturnBadRequest_WhenPageParametersAreInvalid(int page, int pageSize)
     {
+        // Arrange
         var request = new GameHistoryRequest("user@example.com");
     
+        // Act
         var response = await _client.PostAsJsonAsync($"/history/search?page={page}&pageSize={pageSize}", request);
 
+        // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -192,10 +198,13 @@ public class GameControllerIntegrationTests(CustomWebApplicationFactory<Program>
     [InlineData("randomuser123@example.com")]
     public async Task GetGameHistory_ShouldReturnEmpty_WhenNoGamesExistForUser(string email)
     {
+        // Arrange
         var request = new GameHistoryRequest(email);
     
+        // Act
         var response = await _client.PostAsJsonAsync("/history/search?page=1&pageSize=10", request);
     
+        // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var result = await response.Content.ReadFromJsonAsync<PagedResult<PlayGameResponse>>();
     

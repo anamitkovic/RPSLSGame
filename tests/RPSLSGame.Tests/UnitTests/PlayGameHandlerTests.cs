@@ -16,54 +16,6 @@ public class PlayGameHandlerTests
         _gameRepositoryMock = new Mock<IGameResultRepository>();
         _handler = new PlayGameHandler(_randomNumberServiceMock.Object, _gameRepositoryMock.Object);
     }
-
-    [Fact]
-    public async Task Handle_ShouldReturnTie_WhenPlayerAndComputerChooseSameMove()
-    {
-        const GameMove playerMove = GameMove.Rock;
-        _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync(CancellationToken.None)).ReturnsAsync(1);
-
-        var command = new PlayGameCommand(playerMove);
-        
-        var result = await _handler.Handle(command, CancellationToken.None);
-        
-        Assert.True(result.IsSuccess);
-        Assert.Equal("tie", result.Value.Results);
-        Assert.Equal(GameMove.Rock, result.Value.Computer);
-        Assert.Equal(playerMove, result.Value.Player);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldReturnWin_WhenPlayerBeatsComputer()
-    {
-        const GameMove playerMove = GameMove.Rock;
-        _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync(CancellationToken.None)).ReturnsAsync(3); 
-
-        var command = new PlayGameCommand(playerMove);
-
-        var result = await _handler.Handle(command, CancellationToken.None);
-        
-        Assert.True(result.IsSuccess);
-        Assert.Equal("win", result.Value.Results);
-        Assert.Equal(GameMove.Scissors, result.Value.Computer);
-        Assert.Equal(playerMove, result.Value.Player);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldReturnLose_WhenPlayerLosesToComputer()
-    {
-        const GameMove playerMove = GameMove.Scissors;
-        _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync(CancellationToken.None)).ReturnsAsync(1);
-
-        var command = new PlayGameCommand(playerMove);
-        
-        var result = await _handler.Handle(command, CancellationToken.None);
-        
-        Assert.True(result.IsSuccess);
-        Assert.Equal("lose", result.Value.Results);
-        Assert.Equal(GameMove.Rock, result.Value.Computer);
-        Assert.Equal(playerMove, result.Value.Player);
-    }
     
     [Theory]
     [InlineData(GameMove.Rock, GameMove.Rock, "tie")]
@@ -73,13 +25,16 @@ public class PlayGameHandlerTests
     [InlineData(GameMove.Spock, GameMove.Spock, "tie")]
     public async Task Handle_ShouldReturnTie_ForAllMoves(GameMove playerMove, GameMove computerMove, string expectedResult)
     {
+        // Arrange
         var randomNumber = (int)computerMove;
         _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync(CancellationToken.None)).ReturnsAsync(randomNumber);
 
         var command = new PlayGameCommand(playerMove);
         
+        // Act
         var result = await _handler.Handle(command, CancellationToken.None);
         
+        // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(expectedResult, result.Value.Results);
         Assert.Equal(computerMove, result.Value.Computer);
@@ -99,13 +54,16 @@ public class PlayGameHandlerTests
     [InlineData(GameMove.Spock, GameMove.Scissors, "win")]
     public async Task Handle_ShouldReturnWin_ForAllWinningCombinations(GameMove playerMove, GameMove computerMove, string expectedResult)
     {
+        // Arrange
         var randomNumber = (int)computerMove;
         _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync(CancellationToken.None)).ReturnsAsync(randomNumber);
 
         var command = new PlayGameCommand(playerMove);
         
+        // Act
         var result = await _handler.Handle(command, CancellationToken.None);
         
+        // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(expectedResult, result.Value.Results);
         Assert.Equal(computerMove, result.Value.Computer);
@@ -125,13 +83,16 @@ public class PlayGameHandlerTests
     [InlineData(GameMove.Spock, GameMove.Lizard, "lose")]
     public async Task Handle_ShouldReturnLose_ForAllLosingCombinations(GameMove playerMove, GameMove computerMove, string expectedResult)
     {
+        // Arrange
         var randomNumber = (int)computerMove;
         _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync(CancellationToken.None)).ReturnsAsync(randomNumber);
 
         var command = new PlayGameCommand(playerMove);
         
+        // Act
         var result = await _handler.Handle(command, CancellationToken.None);
         
+        // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(expectedResult, result.Value.Results);
         Assert.Equal(computerMove, result.Value.Computer);
@@ -141,13 +102,16 @@ public class PlayGameHandlerTests
     [Fact]
     public async Task Handle_ShouldNotSaveGameResult_WhenEmailIsNotProvided()
     {
+        // Arrange
         const GameMove playerMove = GameMove.Rock;
         _randomNumberServiceMock.Setup(x => x.GetRandomNumberAsync(CancellationToken.None)).ReturnsAsync(2);
 
         var command = new PlayGameCommand(playerMove);
 
+        // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
+        // Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
         _gameRepositoryMock.Verify(x => x.AddGameResultAsync(It.IsAny<GameResult>(), It.IsAny<CancellationToken>()), Times.Never);
